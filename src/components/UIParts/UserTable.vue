@@ -8,7 +8,7 @@ import CustomSelect from "@/components/UI/CustomSelect.vue";
 import CustomInput from "@/components/UI/CustomInput.vue";
 import {getAllArraysInObjects} from "@/composables/useUtility"
 
-const rolesIsNotEmpty = computed(()=> { return props.persons })
+const rolesIsNotEmpty = computed(()=> { return props.persons.length })
 
 const props = defineProps<{
   persons: Person[]
@@ -97,7 +97,3 @@ const openModal = ref<boolean>(false)
     </custom-modal>
   </div>
 </template>
-
-<style scoped lang="sass">
-
-</style>
