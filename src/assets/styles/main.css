@@ -1,0 +1,18 @@
+@import './base.css';
+
+@media (min-width: 1024px) {
+  body {
+    display: flex;
+    justify-content: center;
+    place-items: center;
+  }
+}
+
+@media(max-width: 1024px){
+  body{
+    display: flex;
+    justify-content: center;
+    flex-direction: column;
+  }
+}
+
