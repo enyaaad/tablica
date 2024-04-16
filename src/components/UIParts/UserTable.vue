@@ -1,42 +1,41 @@
 <script setup lang="ts">
 import type {Person} from "@/models/types/Persons";
-import type {PropType} from "vue";
 import {computed, reactive, ref} from "vue";
 import TableRow from "@/components/UI/Table/TableRow.vue";
 import CustomButton from "@/components/UI/CustomButton.vue";
 import CustomModal from "@/components/UI/Modal/CustomModal.vue";
 import CustomSelect from "@/components/UI/CustomSelect.vue";
 import CustomInput from "@/components/UI/CustomInput.vue";
-import {Mockup} from "@/models/types/Persons";
+import {getAllArraysInObjects} from "@/composables/useUtility"
 
 const rolesIsNotEmpty = computed(()=> { return props.persons })
 
-const props = defineProps({
-  persons: {
-    type: Object as PropType<Person[]>,
-    required: true
-  }
-})
+const props = defineProps<{
+  persons: Person[]
+}>()
+
+const emits = defineEmits(['userAdd','userPush'])
+
+function flattenNestedObjects(obj) {
+  let flattenedObject = [];
+
+  flattenedObject.push(...obj)
+
+  getAllArraysInObjects(obj).forEach(array => {
+    flattenedObject.push(...array)
+  })
+
+  return flattenedObject;
+}
 
 const addUser = (event) => {
   event.preventDefault()
+  if(userForm.name.length < 1)
+    return
 
-  console.log(props.persons?.flat(Infinity))
-  if(!userForm.chief){
-    if(userForm.name === '')
-      return
-    Mockup.push(<Person>Object.assign(userForm,{id:Math.round(Math.random())}))
-  }
-  else {
-    let person = Mockup.find((person)=> person.id === userForm.chief)
-    console.log(person, person.childrens)
-    if(person && person.childrens)
-      person?.childrens.push(<Person>Object.assign(userForm,{id:Math.round(Math.random())}))
-  }
+  userForm.chief ? emits('userPush', userForm) : emits('userAdd', userForm)
 
-  console.log(Mockup.find((person)=> person.id === userForm.chief))
-
-  localStorage.setItem('data',JSON.stringify(Mockup))
+  localStorage.setItem('data', JSON.stringify(props.persons))
 }
 
 const userForm = reactive({
@@ -82,11 +81,11 @@ const openModal = ref<boolean>(false)
         <form @submit="addUser($event)">
 
           <div style="margin-bottom: 30px">
-            <custom-input :label="'хуй'" @update:modelValue = "userForm.name = $event"/>
+            <custom-input :label="'ФИО'" @update:modelValue = "userForm.name = $event"/>
 
-            <custom-input :label="'хуй2'" @update:modelValue = "userForm.phone = $event"/>
+            <custom-input :label="'Телефон'" @update:modelValue = "userForm.phone = $event"/>
 
-            <custom-select :label="'хуй3'" :items="persons.flat(Infinity)" @update:modelValue="userForm.chief = $event"/>
+            <custom-select :label="'Начальник'" :items="flattenNestedObjects(persons)" @update:modelValue="userForm.chief = $event"/>
           </div>
 
           <custom-button type="submit">
