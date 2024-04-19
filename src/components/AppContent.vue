@@ -8,7 +8,17 @@ import {onMounted, ref} from "vue";
 let data = ref([])
 
 onMounted(()=> {
-  localStorage.getItem('data') ? data.value = JSON.parse(localStorage.getItem('data')) : data.value = Mockup
+  const personJSON = localStorage.getItem('data');
+  try {
+    if(personJSON) {
+      data.value = JSON.parse(localStorage.getItem('data'))
+      return
+    }
+  } catch (e) {
+    // catch error
+  } finally {
+    data.value = Mockup
+  }
 })
 
 const addUser = (person) => {
